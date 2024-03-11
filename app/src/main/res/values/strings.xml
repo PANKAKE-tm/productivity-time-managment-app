@@ -3,4 +3,7 @@
     <string name="start">Start</string>
     <string name="pause">Pause</string>
     <string name="resume">Resume</string>
+
+    <string name="channel_name">Pomodoro Timer Notifications</string>
+    <string name="channel_description">Notification channel for Pomodoro Timer app alerts</string>
 </resources>
