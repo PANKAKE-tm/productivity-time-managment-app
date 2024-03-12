@@ -6,19 +6,23 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Button;
 
 public class PomodoroTimer extends AppCompatActivity {
     private TextView timerTextView;
     private Button startPauseButton;
-    private Button resetButton;
     private CountDownTimer countDownTimer;
     private boolean timerRunning;
     private long timeLeftInMillis;
     public long studyTime;
     public long restTime;
+
+    private enum TimerPhase {
+        STUDY, REST, STOPPED
+    }
+
+    private TimerPhase currentPhase = TimerPhase.STOPPED;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,38 +36,29 @@ public class PomodoroTimer extends AppCompatActivity {
             timeLeftInMillis = studyTime;
         }
 
-        //Locates the buttons
         timerTextView = findViewById(R.id.timerTextView);
         startPauseButton = findViewById(R.id.startPauseButton);
-        resetButton = findViewById(R.id.resetButton);
+        Button resetButton = findViewById(R.id.resetButton);
 
-        startPauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (timerRunning) {
-                    pauseTimer();
+        startPauseButton.setOnClickListener(v -> {
+            if (timerRunning) {
+                pauseTimer();
+            } else {
+                if (currentPhase == TimerPhase.STOPPED || currentPhase == TimerPhase.REST) {
+                    startStudyTimer();
                 } else {
-                    startTimer(timeLeftInMillis, restTime);
+                    startRestTimer();
                 }
             }
         });
 
-        resetButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                resetTimer();
-            }
-        });
+        resetButton.setOnClickListener(v -> resetTimer());
 
         updateTimerText();
     }
 
-    /*
-    Set the timer to the preferred amount
-     */
-    private void startTimer(long studyT, long restT)
-    {
-        countDownTimer = new CountDownTimer(studyT, 1000) {
+    private void startStudyTimer() {
+        countDownTimer = new CountDownTimer(studyTime, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 timeLeftInMillis = millisUntilFinished;
@@ -72,46 +67,53 @@ public class PomodoroTimer extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                if (timerRunning)
-                {
-                    timerRunning = false;
-                    startTimer(restT, 0);
-                }
-                else
-                {
-                    timerRunning = false;
-                    startPauseButton.setText("Start");
-                }
+                startRestTimer();
             }
         }.start();
         timerRunning = true;
-        startPauseButton.setText("Pause");
+        currentPhase = TimerPhase.STUDY;
+        startPauseButton.setText(getString(R.string.pause));
     }
 
-    /*
-    Pauses the timer
-     */
+    private void startRestTimer() {
+        countDownTimer = new CountDownTimer(restTime, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                timeLeftInMillis = millisUntilFinished;
+                updateTimerText();
+            }
+
+            @Override
+            public void onFinish() {
+                timerRunning = false;
+                currentPhase = TimerPhase.STOPPED;
+                startPauseButton.setText(getString(R.string.start));
+                timeLeftInMillis = studyTime; // Prepare for next study session
+                updateTimerText();
+            }
+        }.start();
+        timerRunning = true;
+        currentPhase = TimerPhase.REST;
+        startPauseButton.setText(getString(R.string.pause));
+    }
+
     private void pauseTimer() {
         countDownTimer.cancel();
         timerRunning = false;
-        startPauseButton.setText("Resume");
+        startPauseButton.setText(getString(R.string.resume));
     }
 
-    /*
-    Reset the timer
-     */
     private void resetTimer() {
-        timeLeftInMillis = studyTime; // Reset to 25 minutes
-        updateTimerText();
-        if (timerRunning) {
-            pauseTimer();
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
         }
-        startPauseButton.setText("Start");
+        timeLeftInMillis = studyTime;
+        timerRunning = false;
+        currentPhase = TimerPhase.STOPPED;
+        updateTimerText();
+        startPauseButton.setText(getString(R.string.start));
     }
 
-    /*
-    Updates the time text according to the left time
-     */
     private void updateTimerText() {
         int minutes = (int) (timeLeftInMillis / 1000) / 60;
         int seconds = (int) (timeLeftInMillis / 1000) % 60;
