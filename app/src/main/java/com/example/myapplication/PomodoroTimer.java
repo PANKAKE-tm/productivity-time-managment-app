@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.widget.TextView;
 import android.widget.Button;
 
@@ -18,6 +19,10 @@ public class PomodoroTimer extends AppCompatActivity {
     public long studyTime;
     public long restTime;
 
+    private final Handler handler = new Handler();
+    private Runnable failTask;
+    private NotificationHelper notificationHelper;
+
     private enum TimerPhase {
         STUDY, REST, STOPPED
     }
@@ -28,6 +33,9 @@ public class PomodoroTimer extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pomodoro_timer);
+
+        notificationHelper = new NotificationHelper(this);
+        notificationHelper.createNotificationChannel();
 
         Intent intent = getIntent();
         if (intent != null) {
@@ -55,6 +63,34 @@ public class PomodoroTimer extends AppCompatActivity {
         resetButton.setOnClickListener(v -> resetTimer());
 
         updateTimerText();
+    }
+
+    protected void onStart() {
+        super.onStart();
+        notificationHelper.checkNotificationPermission();
+    }
+
+    protected void onStop() {
+        super.onStop();
+        if (currentPhase == TimerPhase.STUDY) {
+            notificationHelper.displayNotification("Come back to the app within one minute, or you will fail");
+
+            // Define the fail task
+            failTask = () -> {
+                if (currentPhase == TimerPhase.STUDY) { // Double-check phase in case it changes
+                    notificationHelper.displayNotification("Failed");
+                }
+            };
+            handler.postDelayed(failTask, 60 * 1000); // 60 seconds
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Always cancel the notification and remove callbacks for the fail task when resuming the activity
+        notificationHelper.cancelNotification();
+        handler.removeCallbacks(failTask);
     }
 
     private void startStudyTimer() {
