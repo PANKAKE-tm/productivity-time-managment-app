@@ -55,9 +55,10 @@ public class MainActivity extends AppCompatActivity {
     private void loadFragment(Fragment fragment, boolean isAppInitialized) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frameLayout, fragment);
-        if (!isAppInitialized) {
-            fragmentTransaction.addToBackStack(null);
+        if (isAppInitialized) {
+            fragmentTransaction.add(R.id.frameLayout, fragment);
+        } else {
+            fragmentTransaction.replace(R.id.frameLayout, fragment);
         }
         fragmentTransaction.commit();
     }
