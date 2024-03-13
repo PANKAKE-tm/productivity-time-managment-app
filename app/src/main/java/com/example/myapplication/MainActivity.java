@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -19,10 +20,18 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
     private FrameLayout frameLayout;
 
+    private final Handler handler = new Handler();
+    private Runnable failTask;
+    private NotificationHelper notificationHelper;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        notificationHelper = new NotificationHelper(this);
+        notificationHelper.createNotificationChannel();
 
         bottomNavigationView = findViewById(R.id.bottomNavView);
         frameLayout = findViewById(R.id.frameLayout);

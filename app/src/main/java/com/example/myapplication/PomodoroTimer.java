@@ -23,16 +23,16 @@ public class PomodoroTimer extends AppCompatActivity {
     private Runnable failTask;
     private NotificationHelper notificationHelper;
 
-    private enum TimerPhase {
+    public enum TimerPhase {
         STUDY, REST, STOPPED
     }
 
-    private TimerPhase currentPhase = TimerPhase.STOPPED;
+    public TimerPhase currentPhase = TimerPhase.STOPPED;
 
-    @Override
+    @Override/*
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pomodoro_timer);
+        setContentView(R.layout.fragment_home);
 
         notificationHelper = new NotificationHelper(this);
         notificationHelper.createNotificationChannel();
@@ -63,7 +63,7 @@ public class PomodoroTimer extends AppCompatActivity {
         resetButton.setOnClickListener(v -> resetTimer());
 
         updateTimerText();
-    }
+    }*/
 
     protected void onStart() {
         super.onStart();
@@ -93,7 +93,7 @@ public class PomodoroTimer extends AppCompatActivity {
         handler.removeCallbacks(failTask);
     }
 
-    private void startStudyTimer() {
+    public void startStudyTimer() {
         countDownTimer = new CountDownTimer(studyTime, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -111,7 +111,7 @@ public class PomodoroTimer extends AppCompatActivity {
         startPauseButton.setText(getString(R.string.pause));
     }
 
-    private void startRestTimer() {
+    public void startRestTimer() {
         countDownTimer = new CountDownTimer(restTime, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -133,13 +133,13 @@ public class PomodoroTimer extends AppCompatActivity {
         startPauseButton.setText(getString(R.string.pause));
     }
 
-    private void pauseTimer() {
+    public void pauseTimer() {
         countDownTimer.cancel();
         timerRunning = false;
         startPauseButton.setText(getString(R.string.resume));
     }
 
-    private void resetTimer() {
+    public void resetTimer() {
         if (countDownTimer != null) {
             countDownTimer.cancel();
         }
@@ -150,7 +150,7 @@ public class PomodoroTimer extends AppCompatActivity {
         startPauseButton.setText(getString(R.string.start));
     }
 
-    private void updateTimerText() {
+    public void updateTimerText() {
         int minutes = (int) (timeLeftInMillis / 1000) / 60;
         int seconds = (int) (timeLeftInMillis / 1000) % 60;
 

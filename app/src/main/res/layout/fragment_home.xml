@@ -1,25 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".HomeFragment">
 
-
     <TextView
+        android:id="@+id/timerTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        android:layout_gravity="center"
-        android:gravity="center" />
+        android:textSize="24sp"
+        android:layout_centerInParent="true"
+        android:text="25:00" />
 
     <Button
-        android:id="@+id/startButton"
+        android:id="@+id/startPauseButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:layout_gravity="center"
-        android:text="Start"
-        tools:ignore="HardcodedText" />
+        android:layout_below="@id/timerTextView"
+        android:layout_marginTop="16dp"
+        android:text="Start/Pause" />
 
-</FrameLayout>
+    <Button
+        android:id="@+id/resetButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/startPauseButton"
+        android:layout_marginTop="8dp"
+        android:text="Reset" />
+</RelativeLayout>
