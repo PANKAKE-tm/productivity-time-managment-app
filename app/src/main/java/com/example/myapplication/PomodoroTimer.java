@@ -103,14 +103,14 @@ public class PomodoroTimer extends AppCompatActivity {
     }
 
     private void startStudyTimer() {
-        notificationHelper.displayNotification("Time left to study: " + timeLeftInMillis, TIMER_NOTIFICATION_ID, true);
+        notificationHelper.displayNotification("Time left to study: " + formattedTimeLeft(), TIMER_NOTIFICATION_ID, true);
 
         countDownTimer = new CountDownTimer(studyTime, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 timeLeftInMillis = millisUntilFinished;
                 updateTimerText();
-                notificationHelper.displayNotification("Time left to study: " + timeLeftInMillis, TIMER_NOTIFICATION_ID, true);
+                notificationHelper.displayNotification("Time left to study: " + formattedTimeLeft(), TIMER_NOTIFICATION_ID, true);
             }
 
             @Override
@@ -125,12 +125,12 @@ public class PomodoroTimer extends AppCompatActivity {
     }
 
     private void startRestTimer() {
-        notificationHelper.displayNotification("Time left to rest: " + timeLeftInMillis, TIMER_NOTIFICATION_ID, true);
+        notificationHelper.displayNotification("Time left to rest: " + formattedTimeLeft(), TIMER_NOTIFICATION_ID, true);
         countDownTimer = new CountDownTimer(restTime, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 timeLeftInMillis = millisUntilFinished;
-                notificationHelper.displayNotification("Time left to rest: " + timeLeftInMillis, TIMER_NOTIFICATION_ID, true);
+                notificationHelper.displayNotification("Time left to rest: " + formattedTimeLeft(), TIMER_NOTIFICATION_ID, true);
                 updateTimerText();
             }
 
@@ -169,10 +169,13 @@ public class PomodoroTimer extends AppCompatActivity {
     }
 
     private void updateTimerText() {
+        timerTextView.setText(formattedTimeLeft());
+    }
+
+    @SuppressLint("DefaultLocale")
+    private String formattedTimeLeft() {
         int minutes = (int) (timeLeftInMillis / 1000) / 60;
         int seconds = (int) (timeLeftInMillis / 1000) % 60;
-
-        @SuppressLint("DefaultLocale") String timeLeftFormatted = String.format("%02d:%02d", minutes, seconds);
-        timerTextView.setText(timeLeftFormatted);
+        return String.format("%02d:%02d", minutes, seconds);
     }
 }
