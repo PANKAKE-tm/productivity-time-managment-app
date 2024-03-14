@@ -73,21 +73,27 @@ public class PomodoroTimer extends AppCompatActivity {
         notificationHelper.checkNotificationPermission();
     }
 
+    // When user exits current activity, warn about failure in 1 min
     protected void onStop() {
         super.onStop();
         if (currentPhase == TimerPhase.STUDY) {
-            notificationHelper.displayNotification("Come back to the app within one minute, or you will fail", FAILING_NOTIFICATION_ID);
+            notificationHelper.displayNotification(
+                    "Come back to the app within one minute, or you will fail",
+                    FAILING_NOTIFICATION_ID,
+                    false
+            );
 
             // Define the fail task
             failTask = () -> {
                 if (currentPhase == TimerPhase.STUDY) { // Double-check phase in case it changes
-                    notificationHelper.displayNotification("Failed", FAILING_NOTIFICATION_ID);
+                    notificationHelper.displayNotification("Failed", FAILING_NOTIFICATION_ID, false);
                 }
             };
             handler.postDelayed(failTask, 60 * 1000); // 60 seconds
         }
     }
 
+    // When comes back to current activity, cancel failure timer and notification
     @Override
     protected void onResume() {
         super.onResume();
@@ -97,16 +103,20 @@ public class PomodoroTimer extends AppCompatActivity {
     }
 
     private void startStudyTimer() {
+        notificationHelper.displayNotification("Time left to study: " + timeLeftInMillis, TIMER_NOTIFICATION_ID, true);
+
         countDownTimer = new CountDownTimer(studyTime, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 timeLeftInMillis = millisUntilFinished;
                 updateTimerText();
+                notificationHelper.displayNotification("Time left to study: " + timeLeftInMillis, TIMER_NOTIFICATION_ID, true);
             }
 
             @Override
             public void onFinish() {
                 startRestTimer();
+                notificationHelper.cancelNotification(TIMER_NOTIFICATION_ID);
             }
         }.start();
         timerRunning = true;
@@ -115,10 +125,12 @@ public class PomodoroTimer extends AppCompatActivity {
     }
 
     private void startRestTimer() {
+        notificationHelper.displayNotification("Time left to rest: " + timeLeftInMillis, TIMER_NOTIFICATION_ID, true);
         countDownTimer = new CountDownTimer(restTime, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 timeLeftInMillis = millisUntilFinished;
+                notificationHelper.displayNotification("Time left to rest: " + timeLeftInMillis, TIMER_NOTIFICATION_ID, true);
                 updateTimerText();
             }
 
@@ -129,6 +141,7 @@ public class PomodoroTimer extends AppCompatActivity {
                 startPauseButton.setText(getString(R.string.start));
                 timeLeftInMillis = studyTime; // Prepare for next study session
                 updateTimerText();
+                notificationHelper.cancelNotification(TIMER_NOTIFICATION_ID);
             }
         }.start();
         timerRunning = true;
@@ -139,6 +152,7 @@ public class PomodoroTimer extends AppCompatActivity {
     private void pauseTimer() {
         countDownTimer.cancel();
         timerRunning = false;
+        notificationHelper.cancelNotification(TIMER_NOTIFICATION_ID);
         startPauseButton.setText(getString(R.string.resume));
     }
 
@@ -150,6 +164,7 @@ public class PomodoroTimer extends AppCompatActivity {
         timerRunning = false;
         currentPhase = TimerPhase.STOPPED;
         updateTimerText();
+        notificationHelper.cancelNotification(TIMER_NOTIFICATION_ID);
         startPauseButton.setText(getString(R.string.start));
     }
 

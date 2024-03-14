@@ -21,6 +21,7 @@ public class NotificationHelper {
         this.context = context;
     }
 
+    // creates channel for all notifications - only needs to be called once
     public void createNotificationChannel() {
         CharSequence name = context.getString(R.string.channel_name);
         String description = context.getString(R.string.channel_description);
@@ -31,22 +32,26 @@ public class NotificationHelper {
         notificationManager.createNotificationChannel(channel);
     }
 
-    public void displayNotification(String message, int notificationID) {
+    // displays notification with specified ID - call as many times as you please
+    public void displayNotification(String message, int notificationID, boolean setSilent) {
         try {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                     .setSmallIcon(R.drawable.ic_launcher_foreground) // Ensure you have this icon in your drawable resources
                     .setContentTitle("Pomodoro App")
                     .setContentText(message)
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    .setSilent(setSilent);
 
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
             notificationManager.notify(notificationID, builder.build());
         } catch (SecurityException e) {
             Log.e("NotificationHelper", "SecurityException while posting notification: " + e.getMessage());
             // Handle the exception or notify the user as appropriate
+            // let's just hope this doesn't happen for now :-)
         }
     }
 
+    // checks if user has given necessary permissions, only needs to be called once
     public void checkNotificationPermission() {
         if (!NotificationManagerCompat.from(context).areNotificationsEnabled()) {
             new AlertDialog.Builder(context)
@@ -63,6 +68,7 @@ public class NotificationHelper {
         }
     }
 
+    // nuke notification out of existence, specified by id
     public void cancelNotification(int notificationID) {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.cancel(notificationID);
