@@ -27,6 +27,9 @@ public class PomodoroTimer extends AppCompatActivity {
         STUDY, REST, STOPPED
     }
 
+    private static final int FAILING_NOTIFICATION_ID = 1;
+    private static final int TIMER_NOTIFICATION_ID = 2;
+
     private TimerPhase currentPhase = TimerPhase.STOPPED;
 
     @Override
@@ -73,12 +76,12 @@ public class PomodoroTimer extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         if (currentPhase == TimerPhase.STUDY) {
-            notificationHelper.displayNotification("Come back to the app within one minute, or you will fail");
+            notificationHelper.displayNotification("Come back to the app within one minute, or you will fail", FAILING_NOTIFICATION_ID);
 
             // Define the fail task
             failTask = () -> {
                 if (currentPhase == TimerPhase.STUDY) { // Double-check phase in case it changes
-                    notificationHelper.displayNotification("Failed");
+                    notificationHelper.displayNotification("Failed", FAILING_NOTIFICATION_ID);
                 }
             };
             handler.postDelayed(failTask, 60 * 1000); // 60 seconds
@@ -89,7 +92,7 @@ public class PomodoroTimer extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         // Always cancel the notification and remove callbacks for the fail task when resuming the activity
-        notificationHelper.cancelNotification();
+        notificationHelper.cancelNotification(FAILING_NOTIFICATION_ID);
         handler.removeCallbacks(failTask);
     }
 

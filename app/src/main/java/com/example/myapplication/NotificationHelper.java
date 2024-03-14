@@ -14,7 +14,7 @@ import androidx.core.app.NotificationManagerCompat;
 public class NotificationHelper {
 
     private static final String CHANNEL_ID = "channel_id";
-    private static final int NOTIFICATION_ID = 1;
+
     private final Context context;
 
     public NotificationHelper(Context context) {
@@ -31,7 +31,7 @@ public class NotificationHelper {
         notificationManager.createNotificationChannel(channel);
     }
 
-    public void displayNotification(String message) {
+    public void displayNotification(String message, int notificationID) {
         try {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                     .setSmallIcon(R.drawable.ic_launcher_foreground) // Ensure you have this icon in your drawable resources
@@ -40,7 +40,7 @@ public class NotificationHelper {
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-            notificationManager.notify(NOTIFICATION_ID, builder.build());
+            notificationManager.notify(notificationID, builder.build());
         } catch (SecurityException e) {
             Log.e("NotificationHelper", "SecurityException while posting notification: " + e.getMessage());
             // Handle the exception or notify the user as appropriate
@@ -63,8 +63,8 @@ public class NotificationHelper {
         }
     }
 
-    public void cancelNotification() {
+    public void cancelNotification(int notificationID) {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.cancel(NOTIFICATION_ID);
+        notificationManager.cancel(notificationID);
     }
 }
