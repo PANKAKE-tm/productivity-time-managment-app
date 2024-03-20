@@ -55,12 +55,6 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public void onPause()
-    {
-        super.onPause();
-    }
-
-    @Override
     public void onStop() {
         super.onStop();
         if (pomodoroTimer != null)
@@ -84,7 +78,6 @@ public class HomeFragment extends Fragment {
             // Always cancel the notification and remove callbacks for the fail task when resuming the activity
             mainActivity.notificationHelper.cancelNotification(MainActivity.FAILING_NOTIFICATION_ID);
             mainActivity.handler.removeCallbacks(mainActivity.failTask);
-            //CheckToRun();
         }
     }
 
@@ -104,7 +97,6 @@ public class HomeFragment extends Fragment {
         Objects.requireNonNull(mainActivity).timerRunning = enable;
     }
 
-    //Resets the iteration counter to the initial value
     public void ResetIteration()
     {
         mainActivity.currentIterration = pomodoroTimer.iterationCountInitial;

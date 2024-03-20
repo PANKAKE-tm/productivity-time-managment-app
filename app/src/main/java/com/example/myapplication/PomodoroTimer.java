@@ -61,7 +61,6 @@ public class PomodoroTimer{
     public void startTimer(long studyT, long restT, TimerPhase timerPhase)
     {
         HomeFragment homeFragment = (HomeFragment) fragment;
-        //homeFragment.mainActivity.notificationHelper.displayNotification("Time left: " + formattedTimeLeft(), MainActivity.TIMER_NOTIFICATION_ID, true);
         countDownTimer = new CountDownTimer(studyT, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
