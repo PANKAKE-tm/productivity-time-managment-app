@@ -3,13 +3,17 @@ package com.example.myapplication;
 import androidx.fragment.app.Fragment;
 import android.annotation.SuppressLint;
 import android.os.CountDownTimer;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Button;
 import android.media.MediaPlayer;
 
+import pl.droidsonroids.gif.GifImageView;
+
 public class PomodoroTimer{
     private final TextView timerTextView;
     private final Button startPauseButton;
+    private final GifImageView cookingGif;
     private CountDownTimer countDownTimer;
     private boolean timerRunning;
     public long timeLeftInMillis;
@@ -29,10 +33,11 @@ public class PomodoroTimer{
     public TimerPhase currentPhase = TimerPhase.STOPPED;
     private final Fragment fragment;
 
-    public  PomodoroTimer(TextView timerTextView, Fragment fragment, Button startPauseButton, long sTime, long rTime, int iterationCount, TextView iterationTextCount, TextView iterationType)
+    public  PomodoroTimer(TextView timerTextView, Fragment fragment, Button startPauseButton, GifImageView cookingGif, long sTime, long rTime, int iterationCount, TextView iterationTextCount, TextView iterationType)
     {
         this.fragment = fragment;
         this.startPauseButton = startPauseButton;
+        this.cookingGif = cookingGif;
         this.timerTextView = timerTextView;
         this.timerSound = MediaPlayer.create(fragment.getContext(), R.raw.timersound);
         this.iterationCount = iterationCount;
@@ -46,13 +51,17 @@ public class PomodoroTimer{
 
         startPauseButton.setOnClickListener(v -> {
             if (timerRunning) {
-                pauseTimer();
+                //pauseTimer();
+                resetTimer();
+                cookingGif.setVisibility(View.INVISIBLE);
             } else if (currentPhase == TimerPhase.STOPPED || currentPhase == TimerPhase.STUDY) {
                 startTimer(timeLeftInMillis, restTime, TimerPhase.STUDY);
+                cookingGif.setVisibility(View.VISIBLE);
             }
             else
             {
                 startTimer(timeLeftInMillis, 0, TimerPhase.REST);
+                cookingGif.setVisibility(View.INVISIBLE);
             }
         });
     }
@@ -98,7 +107,7 @@ public class PomodoroTimer{
         }
         timerRunning = true;
         homeFragment.setTimer(true);
-        startPauseButton.setText("Pause");
+        startPauseButton.setText("Stop");
     }
 
     public void pauseTimer() {
@@ -120,7 +129,7 @@ public class PomodoroTimer{
         updateTimerText();
         HomeFragment homeFragment = (HomeFragment) fragment;
         homeFragment.mainActivity.notificationHelper.cancelNotification(MainActivity.TIMER_NOTIFICATION_ID);
-        startPauseButton.setText(fragment.getString(R.string.start));
+        startPauseButton.setText("Begin");
         iterationTextCount.setText(String.valueOf(iterationCountInitial));
     }
 
@@ -131,9 +140,13 @@ public class PomodoroTimer{
         {
             iterationTextCount.setText(iterationString);
         }
-        if(iterationType.getText() != currentPhase.toString())
+        if(currentPhase == TimerPhase.STUDY)
         {
-            iterationType.setText(currentPhase.toString());
+            iterationType.setText("Baking your pankake!");
+        }
+        else
+        {
+            iterationType.setText("Start baking");
         }
     }
 
@@ -149,6 +162,6 @@ public class PomodoroTimer{
     {
         HomeFragment homeFragment = (HomeFragment) fragment;
         homeFragment.ResetIteration();
-        iterationType.setText("Pankake finished! ;)");
+        iterationType.setText("Pankake cooked!");
     }
 }
