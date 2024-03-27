@@ -113,8 +113,7 @@ public class PomodoroTimer{
         homeFragment.setTimer(true);
         startPauseButton.setText("Stop");
 
-        if(currentPhase == TimerPhase.STUDY) SwitchGifs(true);
-        else SwitchGifs(false);
+        SwitchGifs(currentPhase == TimerPhase.STUDY);
     }
 
     public void pauseTimer() {
@@ -125,6 +124,7 @@ public class PomodoroTimer{
         startPauseButton.setText(fragment.getString(R.string.resume));
     }
 
+    @SuppressLint("SetTextI18n")
     public void resetTimer() {
         if (countDownTimer != null) {
             countDownTimer.cancel();
@@ -141,6 +141,7 @@ public class PomodoroTimer{
         iterationTextCount.setText(String.valueOf(iterationCountInitial));
     }
 
+    @SuppressLint("SetTextI18n")
     public void resetTimerInternal()
     {
         if (countDownTimer != null) {
@@ -163,6 +164,7 @@ public class PomodoroTimer{
         washingGif.setVisibility(View.INVISIBLE);
     }
 
+    @SuppressLint("SetTextI18n")
     public void updateTimerText() {
         timerTextView.setText(formattedTimeLeft());
         @SuppressLint("DefaultLocale") String iterationString = String.format("%d", iterationCount);
