@@ -31,7 +31,7 @@ public class HomeFragment extends Fragment {
         if (pomodoroTimer == null)
         {
             pomodoroTimer = new PomodoroTimer(timerTextView, this,
-                    startPauseButton, (long) (0.2 * 60 * 1000), (long) (0.1 * 60 * 1000), Objects.requireNonNull(mainActivity).currentIterration, iterationTextCount, iterationType);
+                    startPauseButton, gif, (long) (0.2 * 60 * 1000), (long) (0.1 * 60 * 1000), Objects.requireNonNull(mainActivity).currentIterration, iterationTextCount, iterationType);
         }
         CheckToRun();
 
