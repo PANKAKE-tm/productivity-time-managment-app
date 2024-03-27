@@ -116,13 +116,13 @@ public class PomodoroTimer{
         SwitchGifs(currentPhase == TimerPhase.STUDY);
     }
 
-    public void pauseTimer() {
+/*    public void pauseTimer() {
         countDownTimer.cancel();
         timerRunning = false;
         HomeFragment homeFragment = (HomeFragment) fragment;
         homeFragment.mainActivity.notificationHelper.cancelNotification(MainActivity.TIMER_NOTIFICATION_ID);
         startPauseButton.setText(fragment.getString(R.string.resume));
-    }
+    }*/
 
     @SuppressLint("SetTextI18n")
     public void resetTimer() {

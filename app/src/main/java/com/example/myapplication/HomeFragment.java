@@ -119,9 +119,7 @@ public class HomeFragment extends Fragment {
         washingGif.setVisibility(View.INVISIBLE);
 
         Handler handler = new Handler();
-        Runnable hideGifRunnable = () -> {
-            endGif.setVisibility(View.INVISIBLE);
-        };
+        Runnable hideGifRunnable = () -> endGif.setVisibility(View.INVISIBLE);
         handler.postDelayed(hideGifRunnable, 3000); // 3 sec
     }
 }
