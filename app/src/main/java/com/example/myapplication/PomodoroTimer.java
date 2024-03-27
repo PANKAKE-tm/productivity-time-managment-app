@@ -14,6 +14,7 @@ public class PomodoroTimer{
     private final TextView timerTextView;
     private final Button startPauseButton;
     private final GifImageView cookingGif;
+    private final GifImageView washingGif;
     private CountDownTimer countDownTimer;
     private boolean timerRunning;
     public long timeLeftInMillis;
@@ -33,11 +34,12 @@ public class PomodoroTimer{
     public TimerPhase currentPhase = TimerPhase.STOPPED;
     private final Fragment fragment;
 
-    public  PomodoroTimer(TextView timerTextView, Fragment fragment, Button startPauseButton, GifImageView cookingGif, long sTime, long rTime, int iterationCount, TextView iterationTextCount, TextView iterationType)
+    public  PomodoroTimer(TextView timerTextView, Fragment fragment, Button startPauseButton, GifImageView cookingGif, GifImageView washingGif, long sTime, long rTime, int iterationCount, TextView iterationTextCount, TextView iterationType)
     {
         this.fragment = fragment;
         this.startPauseButton = startPauseButton;
         this.cookingGif = cookingGif;
+        this.washingGif = washingGif;
         this.timerTextView = timerTextView;
         this.timerSound = MediaPlayer.create(fragment.getContext(), R.raw.timersound);
         this.iterationCount = iterationCount;
@@ -52,16 +54,16 @@ public class PomodoroTimer{
         startPauseButton.setOnClickListener(v -> {
             if (timerRunning) {
                 //pauseTimer();
-                resetTimer();
-                cookingGif.setVisibility(View.INVISIBLE);
+                resetTimerInternal();
+                SwitchGifs(false);
             } else if (currentPhase == TimerPhase.STOPPED || currentPhase == TimerPhase.STUDY) {
                 startTimer(timeLeftInMillis, restTime, TimerPhase.STUDY);
-                cookingGif.setVisibility(View.VISIBLE);
+                SwitchGifs(true);
             }
             else
             {
                 startTimer(timeLeftInMillis, 0, TimerPhase.REST);
-                cookingGif.setVisibility(View.INVISIBLE);
+                SwitchGifs(false);
             }
         });
     }
@@ -83,7 +85,7 @@ public class PomodoroTimer{
                 if (currentPhase == TimerPhase.STUDY)
                 {
                     startTimer(restT, 0, TimerPhase.REST);
-                    cookingGif.setVisibility(View.INVISIBLE);
+
                 }
                 else
                 {
@@ -91,11 +93,11 @@ public class PomodoroTimer{
                     if (iterationCount > 0)
                     {
                         startTimer(studyTime, restTime, TimerPhase.STUDY);
-                        cookingGif.setVisibility(View.VISIBLE);
+                        SwitchGifs(true);
                     }
                     else
                     {
-                        resetTimer();
+                        resetTimerInternal();
                         timerSound.start();
                         homeFragment.mainActivity.notificationHelper.cancelNotification(MainActivity.TIMER_NOTIFICATION_ID);
                         TimerFinish();
@@ -110,16 +112,19 @@ public class PomodoroTimer{
         timerRunning = true;
         homeFragment.setTimer(true);
         startPauseButton.setText("Stop");
+
+        SwitchGifs(currentPhase == TimerPhase.STUDY);
     }
 
-    public void pauseTimer() {
+/*    public void pauseTimer() {
         countDownTimer.cancel();
         timerRunning = false;
         HomeFragment homeFragment = (HomeFragment) fragment;
         homeFragment.mainActivity.notificationHelper.cancelNotification(MainActivity.TIMER_NOTIFICATION_ID);
         startPauseButton.setText(fragment.getString(R.string.resume));
-    }
+    }*/
 
+    @SuppressLint("SetTextI18n")
     public void resetTimer() {
         if (countDownTimer != null) {
             countDownTimer.cancel();
@@ -131,11 +136,35 @@ public class PomodoroTimer{
         updateTimerText();
         HomeFragment homeFragment = (HomeFragment) fragment;
         homeFragment.mainActivity.notificationHelper.cancelNotification(MainActivity.TIMER_NOTIFICATION_ID);
+
         startPauseButton.setText("Begin");
         iterationTextCount.setText(String.valueOf(iterationCountInitial));
-        cookingGif.setVisibility(View.INVISIBLE);
     }
 
+    @SuppressLint("SetTextI18n")
+    public void resetTimerInternal()
+    {
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+            countDownTimer = null;
+        }
+        timeLeftInMillis = studyTime;
+        timerRunning = false;
+        currentPhase = TimerPhase.STOPPED;
+        updateTimerText();
+        HomeFragment homeFragment = (HomeFragment) fragment;
+        homeFragment.mainActivity.notificationHelper.cancelNotification(MainActivity.TIMER_NOTIFICATION_ID);
+        homeFragment.setTimer(false);
+        homeFragment.mainActivity.currentPhase = TimerPhase.STOPPED;
+
+        startPauseButton.setText("Begin");
+        iterationTextCount.setText(String.valueOf(iterationCountInitial));
+
+        cookingGif.setVisibility(View.INVISIBLE);
+        washingGif.setVisibility(View.INVISIBLE);
+    }
+
+    @SuppressLint("SetTextI18n")
     public void updateTimerText() {
         timerTextView.setText(formattedTimeLeft());
         @SuppressLint("DefaultLocale") String iterationString = String.format("%d", iterationCount);
@@ -166,5 +195,19 @@ public class PomodoroTimer{
         HomeFragment homeFragment = (HomeFragment) fragment;
         homeFragment.ResetIteration();
         iterationType.setText("Start baking");
+    }
+
+    public void SwitchGifs(boolean cookingVisible)
+    {
+        if(cookingVisible)
+        {
+            cookingGif.setVisibility(View.VISIBLE);
+            washingGif.setVisibility(View.INVISIBLE);
+        }
+        else
+        {
+            cookingGif.setVisibility(View.INVISIBLE);
+            washingGif.setVisibility(View.VISIBLE);
+        }
     }
 }
