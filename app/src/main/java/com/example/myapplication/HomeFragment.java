@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.os.Bundle;
+
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
@@ -17,9 +18,11 @@ import pl.droidsonroids.gif.GifImageView;
 public class HomeFragment extends Fragment {
     private PomodoroTimer pomodoroTimer;
     public MainActivity mainActivity;
+    private GifImageView startGif;
     private GifImageView cookingGif;
     private GifImageView washingGif;
     private GifImageView endGif;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
@@ -29,15 +32,15 @@ public class HomeFragment extends Fragment {
         Button resetButton = view.findViewById(R.id.resetButton);
         TextView iterationTextCount = view.findViewById(R.id.iterationTextCount);
         TextView iterationType = view.findViewById(R.id.iterationType);
+        startGif = view.findViewById(R.id.startGif);
         cookingGif = view.findViewById(R.id.gifImageView);
         washingGif = view.findViewById(R.id.washingGif);
         endGif = view.findViewById(R.id.endGif);
 
         mainActivity = (MainActivity) getActivity();
-        if (pomodoroTimer == null)
-        {
+        if (pomodoroTimer == null) {
             pomodoroTimer = new PomodoroTimer(timerTextView, this,
-                    startPauseButton, cookingGif, washingGif, (long) (0.2 * 60 * 1000), (long) (0.1 * 60 * 1000), Objects.requireNonNull(mainActivity).currentIterration, iterationTextCount, iterationType);
+                    startPauseButton, startGif, cookingGif, washingGif, endGif, (long) (11 * 1000), (long) (6 * 1000), Objects.requireNonNull(mainActivity).currentIterration, iterationTextCount, iterationType);
         }
         CheckToRun();
 
@@ -45,17 +48,12 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-    public void CheckToRun()
-    {
-        if (Objects.requireNonNull(mainActivity).timerRunning)
-        {
-            if(mainActivity.currentPhase == PomodoroTimer.TimerPhase.STUDY)
-            {
+    public void CheckToRun() {
+        if (Objects.requireNonNull(mainActivity).timerRunning) {
+            if (mainActivity.currentPhase == PomodoroTimer.TimerPhase.STUDY) {
                 pomodoroTimer.startTimer(mainActivity.timeleft, pomodoroTimer.restTime, mainActivity.currentPhase);
-            }
-            else
-            {
-                pomodoroTimer.startTimer(mainActivity.timeleft,0, mainActivity.currentPhase);
+            } else {
+                pomodoroTimer.startTimer(mainActivity.timeleft, 0, mainActivity.currentPhase);
             }
         }
     }
@@ -63,10 +61,8 @@ public class HomeFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        if (pomodoroTimer != null)
-        {
-            if(mainActivity.currentPhase == PomodoroTimer.TimerPhase.STUDY)
-            {
+        if (pomodoroTimer != null) {
+            if (mainActivity.currentPhase == PomodoroTimer.TimerPhase.STUDY) {
                 mainActivity.notificationHelper.displayNotification(
                         "Come back to the app within one minute, or you will fail",
                         MainActivity.FAILING_NOTIFICATION_ID,
@@ -97,17 +93,14 @@ public class HomeFragment extends Fragment {
         //pomodoroTimer.timerSound.release(); IF THE APP STARTS TO CRASH RANDOMLY
     }
 
-    public void setTimer(boolean enable)
-    {
-        if(mainActivity == null)
-        {
+    public void setTimer(boolean enable) {
+        if (mainActivity == null) {
             mainActivity = (MainActivity) getActivity();
         }
         Objects.requireNonNull(mainActivity).timerRunning = enable;
     }
 
-    public void ResetIteration()
-    {
+    public void ResetIteration() {
         mainActivity.currentIterration = pomodoroTimer.iterationCountInitial;
         pomodoroTimer.iterationCount = pomodoroTimer.iterationCountInitial;
         mainActivity.currentPhase = PomodoroTimer.TimerPhase.STOPPED;
@@ -117,9 +110,5 @@ public class HomeFragment extends Fragment {
         endGif.setVisibility(View.VISIBLE);
         cookingGif.setVisibility(View.INVISIBLE);
         washingGif.setVisibility(View.INVISIBLE);
-
-        Handler handler = new Handler();
-        Runnable hideGifRunnable = () -> endGif.setVisibility(View.INVISIBLE);
-        handler.postDelayed(hideGifRunnable, 3000); // 3 sec
     }
 }

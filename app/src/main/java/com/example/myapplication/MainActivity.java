@@ -14,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
 
     public boolean timerRunning = false;
     public long timeleft = 0;
-    public int currentIterration = 2;
+    public int currentIterration = 1;
     public PomodoroTimer.TimerPhase currentPhase;
     public final Handler handler = new Handler();
     public Runnable failTask;
