@@ -65,6 +65,11 @@ public class HomeFragment extends Fragment {
         super.onStop();
         if (pomodoroTimer != null)
         {
+            mainActivity.handler.postDelayed(mainActivity.failTask, 10 * 1000); // 60 seconds
+            mainActivity.currentPhase = pomodoroTimer.currentPhase;
+            mainActivity.timeleft = pomodoroTimer.timeLeftInMillis;
+            mainActivity.currentIterration = pomodoroTimer.iterationCount;
+
             if(mainActivity.currentPhase == PomodoroTimer.TimerPhase.STUDY)
             {
                 mainActivity.notificationHelper.displayNotification(
@@ -73,10 +78,6 @@ public class HomeFragment extends Fragment {
                         false
                 );
             }
-            mainActivity.handler.postDelayed(mainActivity.failTask, 10 * 1000); // 60 seconds
-            mainActivity.currentPhase = pomodoroTimer.currentPhase;
-            mainActivity.timeleft = pomodoroTimer.timeLeftInMillis;
-            mainActivity.currentIterration = pomodoroTimer.iterationCount;
         }
     }
 
