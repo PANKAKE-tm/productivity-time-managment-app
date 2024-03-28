@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,6 @@ import pl.droidsonroids.gif.GifImageView;
 public class HomeFragment extends Fragment {
     private PomodoroTimer pomodoroTimer;
     public MainActivity mainActivity;
-    private GifImageView startGif;
     private GifImageView cookingGif;
     private GifImageView washingGif;
     private GifImageView endGif;
@@ -32,7 +30,7 @@ public class HomeFragment extends Fragment {
         Button resetButton = view.findViewById(R.id.resetButton);
         TextView iterationTextCount = view.findViewById(R.id.iterationTextCount);
         TextView iterationType = view.findViewById(R.id.iterationType);
-        startGif = view.findViewById(R.id.startGif);
+        GifImageView startGif = view.findViewById(R.id.startGif);
         cookingGif = view.findViewById(R.id.gifImageView);
         washingGif = view.findViewById(R.id.washingGif);
         endGif = view.findViewById(R.id.endGif);
@@ -62,6 +60,11 @@ public class HomeFragment extends Fragment {
     public void onStop() {
         super.onStop();
         if (pomodoroTimer != null) {
+            mainActivity.handler.postDelayed(mainActivity.failTask, 10 * 1000); // 60 seconds
+            mainActivity.currentPhase = pomodoroTimer.currentPhase;
+            mainActivity.timeleft = pomodoroTimer.timeLeftInMillis;
+            mainActivity.currentIterration = pomodoroTimer.iterationCount;
+
             if (mainActivity.currentPhase == PomodoroTimer.TimerPhase.STUDY) {
                 mainActivity.notificationHelper.displayNotification(
                         "Come back to the app within one minute, or you will fail",
@@ -69,10 +72,6 @@ public class HomeFragment extends Fragment {
                         false
                 );
             }
-            mainActivity.handler.postDelayed(mainActivity.failTask, 10 * 1000); // 60 seconds
-            mainActivity.currentPhase = pomodoroTimer.currentPhase;
-            mainActivity.timeleft = pomodoroTimer.timeLeftInMillis;
-            mainActivity.currentIterration = pomodoroTimer.iterationCount;
         }
     }
 
